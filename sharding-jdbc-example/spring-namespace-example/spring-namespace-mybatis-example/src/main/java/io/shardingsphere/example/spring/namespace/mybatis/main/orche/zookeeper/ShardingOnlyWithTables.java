@@ -28,7 +28,8 @@ public class ShardingOnlyWithTables {
         String configFileName = LOAD_CONFIG_FROM_REG_CENTER ? "META-INF/orche/zookeeper/cloud/shardingTables.xml" : "META-INF/orche/zookeeper/local/shardingTables.xml";
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             DemoService demoService = applicationContext.getBean(DemoService.class);
-            demoService.demo();
+//            demoService.demo();
+            demoService.test();
         }
     }
 }

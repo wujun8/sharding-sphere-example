@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class DemoService {
@@ -35,6 +37,8 @@ public class DemoService {
     
     @Resource
     private OrderItemRepository orderItemRepository;
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(10);
     
     public void demo() {
         orderRepository.createIfNotExistsTable();
@@ -66,5 +70,37 @@ public class DemoService {
         System.out.println(orderItemRepository.selectAll());
         orderItemRepository.dropTable();
         orderRepository.dropTable();
+    }
+
+    public void test() {
+        orderRepository.createIfNotExistsTable();
+        orderItemRepository.createIfNotExistsTable();
+
+        for (int i = 0; i < 20; i++) {
+            final int finalI = i;
+            executorService.submit(new Runnable() {
+                @Override public void run() {
+                    insert(finalI);
+                }
+            });
+        }
+
+//        System.out.println(orderItemRepository.selectAll());
+    }
+
+    private void insert(int userId) {
+
+        System.out.println("Insert--------------");
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setStatus("INSERT_TEST");
+        orderRepository.insert(order);
+        long orderId = order.getOrderId();
+
+        OrderItem item = new OrderItem();
+        item.setOrderId(orderId);
+        item.setUserId(userId);
+        item.setStatus("INSERT_TEST");
+        orderItemRepository.insert(item);
     }
 }
