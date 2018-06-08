@@ -19,8 +19,11 @@ package io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service;
 
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.Order;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.OrderItem;
+import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.AggregateRepository;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderItemRepository;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderRepository;
+import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.result.GroupSum;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,17 +31,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DemoService {
     
     @Resource
     private OrderRepository orderRepository;
-    
     @Resource
     private OrderItemRepository orderItemRepository;
+    @Resource
+    private AggregateRepository aggregateRepository;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private ExecutorService executorService = Executors.newFixedThreadPool(8);
     
     public void demo() {
         orderRepository.createIfNotExistsTable();
@@ -76,16 +81,22 @@ public class DemoService {
         orderRepository.createIfNotExistsTable();
         orderItemRepository.createIfNotExistsTable();
 
-        for (int i = 0; i < 20; i++) {
-            final int finalI = i;
+        for (int i = 0; i < 200; i++) {
             executorService.submit(new Runnable() {
                 @Override public void run() {
-                    insert(finalI);
+                    int userId = RandomUtils.nextInt(1, 1000);
+                    insert(userId);
                 }
             });
         }
+        executorService.shutdown();
+        try {
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-//        System.out.println(orderItemRepository.selectAll());
+        //        System.out.println(orderItemRepository.selectAll());
     }
 
     private void insert(int userId) {
@@ -102,5 +113,17 @@ public class DemoService {
         item.setUserId(userId);
         item.setStatus("INSERT_TEST");
         orderItemRepository.insert(item);
+    }
+
+    public void selectAgg() {
+        int userId = 104;
+        long total = aggregateRepository.sumSelectByUser(userId);
+        System.out.println(String.format("user(%s): %s ", userId, total));
+
+        List<GroupSum> groupSums = aggregateRepository.sumSelectByUserGroup();
+        System.out.println(String.format("user group sum[%s]: %s ", groupSums.size(), groupSums));
+
+        long count = aggregateRepository.countSelectByUser();
+        System.out.println(String.format("countSelectByUser: %s ", count));
     }
 }

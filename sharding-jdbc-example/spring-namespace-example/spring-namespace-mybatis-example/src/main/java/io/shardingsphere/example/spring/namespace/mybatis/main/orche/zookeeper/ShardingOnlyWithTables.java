@@ -29,7 +29,8 @@ public class ShardingOnlyWithTables {
         try (ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(configFileName)) {
             DemoService demoService = applicationContext.getBean(DemoService.class);
 //            demoService.demo();
-            demoService.test();
+//            demoService.test();
+            demoService.selectAgg();
         }
     }
 }
