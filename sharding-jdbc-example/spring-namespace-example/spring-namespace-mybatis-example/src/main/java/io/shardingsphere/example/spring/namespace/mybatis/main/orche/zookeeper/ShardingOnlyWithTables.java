@@ -18,6 +18,7 @@
 package io.shardingsphere.example.spring.namespace.mybatis.main.orche.zookeeper;
 
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service.DemoService;
+import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service.ITransferService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ShardingOnlyWithTables {
@@ -30,7 +31,14 @@ public class ShardingOnlyWithTables {
             DemoService demoService = applicationContext.getBean(DemoService.class);
 //            demoService.demo();
 //            demoService.test();
-            demoService.selectAgg();
+//            demoService.selectAgg();
+            ITransferService transferSvc = (ITransferService) applicationContext.getBean("genericTransferService");
+            try {
+                transferSvc.transfer("1001", "2001", 1.00d);
+                Thread.sleep(60000);//不能立即结束，需等待事务清理任务执行
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }

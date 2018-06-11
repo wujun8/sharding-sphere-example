@@ -13,12 +13,17 @@
                         http://shardingsphere.io/schema/shardingsphere/orchestration/sharding 
                         http://shardingsphere.io/schema/shardingsphere/orchestration/sharding/sharding.xsd">
     <import resource="classpath*:META-INF/orche/zookeeper/regCenter.xml" />
+    <import resource="dubbo-consumer.xml" />
+
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.mybatis" />
-    <bean id="demo_ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="originalds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
-        <property name="password" value="password"/>
+        <property name="password" value=""/>
+    </bean>
+    <bean id="demo_ds" class="org.bytesoft.bytejta.supports.jdbc.LocalXADataSource">
+        <property name="dataSource" ref="originalds" />
     </bean>
     
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.mybatis.fixtrue.algorithm.PreciseModuloTableShardingAlgorithm" />
@@ -40,11 +45,7 @@
             <prop key="sql.show">true</prop>
         </sharding:props>
     </sharding:data-source>
-    
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="shardingTableDataSource" />
-    </bean>
-    <tx:annotation-driven />
+
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="shardingTableDataSource"/>
