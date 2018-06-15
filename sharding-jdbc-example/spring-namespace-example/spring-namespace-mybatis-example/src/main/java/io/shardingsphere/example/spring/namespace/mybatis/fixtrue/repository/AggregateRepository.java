@@ -11,4 +11,5 @@ public interface AggregateRepository {
     List<GroupSum> sumSelectByUserGroup();
 
     long countSelectByUser();
+    long countSelectStatus();
 }

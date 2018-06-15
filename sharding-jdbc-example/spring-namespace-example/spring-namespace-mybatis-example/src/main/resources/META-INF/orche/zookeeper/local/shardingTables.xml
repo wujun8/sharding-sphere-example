@@ -18,7 +18,7 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/demo_ds"/>
         <property name="username" value="root"/>
-        <property name="password" value="password"/>
+        <property name="password" value=""/>
     </bean>
     
     <bean id="preciseModuloTableShardingAlgorithm" class="io.shardingsphere.example.spring.namespace.mybatis.fixtrue.algorithm.PreciseModuloTableShardingAlgorithm" />

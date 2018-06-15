@@ -30,7 +30,8 @@ public class ShardingOnlyWithTables {
             DemoService demoService = applicationContext.getBean(DemoService.class);
 //            demoService.demo();
 //            demoService.test();
-            demoService.selectAgg();
+//            demoService.selectAgg();
+            demoService.selectPage();
         }
     }
 }

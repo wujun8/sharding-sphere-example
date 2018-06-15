@@ -21,8 +21,6 @@
             o.user_id, SUM(o.user_id) as total
         FROM
             t_order_item o
-        WHERE
-            o.user_id % 2 = 1
         GROUP BY o.user_id
     </select>
 
@@ -31,7 +29,13 @@
             COUNT(DISTINCT o.user_id)
         FROM
             t_order o
-        WHERE
-            o.user_id % 2 = 1
+    </select>
+
+    <!-- wrong -->
+    <select id="countSelectStatus" resultType="java.lang.Long">
+        SELECT
+            COUNT(DISTINCT o.status)
+        FROM
+            t_order o
     </select>
 </mapper>

@@ -22,8 +22,11 @@ import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.OrderIt
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.AggregateRepository;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderItemRepository;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderRepository;
+import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.PageRepository;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.result.GroupSum;
 import org.apache.commons.lang3.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class DemoService {
+    static Logger logger = LoggerFactory.getLogger(DemoService.class);
     
     @Resource
     private OrderRepository orderRepository;
@@ -42,6 +46,8 @@ public class DemoService {
     private OrderItemRepository orderItemRepository;
     @Resource
     private AggregateRepository aggregateRepository;
+    @Resource
+    private PageRepository pageRepository;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(8);
     
@@ -123,7 +129,29 @@ public class DemoService {
         List<GroupSum> groupSums = aggregateRepository.sumSelectByUserGroup();
         System.out.println(String.format("user group sum[%s]: %s ", groupSums.size(), groupSums));
 
-        long count = aggregateRepository.countSelectByUser();
-        System.out.println(String.format("countSelectByUser: %s ", count));
+        long count = aggregateRepository.countSelectStatus();
+        System.out.println(String.format("countSelectStatus: %s ", count));
+    }
+
+    public void selectPage() {
+        List<Order> orders = pageRepository.selectOrderPage(4000000, 10);
+        logger.info("orders: {}", orders);
+    }
+
+    public void buildData() {
+        for (int i = 0; i < 1000; i++) {
+            Order order = new Order();
+            order.setUserId(100);
+            order.setStatus("INSERT_TEST" + i);
+            orderRepository.insert(order);
+        }
+        // INSERT INTO t_order_0 (user_id, `status`) SELECT user_id, `status` FROM t_order_0;
+
+        for (int i = 0; i < 100; i++) {
+            Order order = new Order();
+            order.setUserId(101);
+            order.setStatus("INSERT_TEST" + i);
+            orderRepository.insert(order);
+        }
     }
 }
