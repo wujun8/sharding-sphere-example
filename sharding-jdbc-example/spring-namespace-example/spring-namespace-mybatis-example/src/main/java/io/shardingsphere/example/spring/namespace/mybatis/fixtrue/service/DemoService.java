@@ -136,6 +136,8 @@ public class DemoService {
     public void selectPage() {
         List<Order> orders = pageRepository.selectOrderPage(4000000, 10);
         logger.info("orders: {}", orders);
+        orders = pageRepository.selectOrderPage(4000010, 10);
+        logger.info("orders: {}", orders);
     }
 
     public void buildData() {
