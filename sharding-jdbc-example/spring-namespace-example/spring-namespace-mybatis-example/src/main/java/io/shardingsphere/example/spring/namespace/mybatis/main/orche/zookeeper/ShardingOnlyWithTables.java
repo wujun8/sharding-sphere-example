@@ -31,7 +31,8 @@ public class ShardingOnlyWithTables {
 //            demoService.demo();
 //            demoService.test();
 //            demoService.selectAgg();
-            demoService.selectPage();
+//            demoService.selectPage();
+            demoService.selectJoin();
         }
     }
 }

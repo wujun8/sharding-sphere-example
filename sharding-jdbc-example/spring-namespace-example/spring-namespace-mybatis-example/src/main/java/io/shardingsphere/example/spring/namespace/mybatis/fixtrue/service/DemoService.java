@@ -19,10 +19,7 @@ package io.shardingsphere.example.spring.namespace.mybatis.fixtrue.service;
 
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.Order;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.entity.OrderItem;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.AggregateRepository;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderItemRepository;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.OrderRepository;
-import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.PageRepository;
+import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.*;
 import io.shardingsphere.example.spring.namespace.mybatis.fixtrue.result.GroupSum;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
@@ -48,6 +45,8 @@ public class DemoService {
     private AggregateRepository aggregateRepository;
     @Resource
     private PageRepository pageRepository;
+    @Resource
+    private JoinRepository joinRepository;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(8);
     
@@ -155,5 +154,12 @@ public class DemoService {
             order.setStatus("INSERT_TEST" + i);
             orderRepository.insert(order);
         }
+    }
+
+    public void selectJoin() {
+        List<Order> orders = joinRepository.selectJoin();
+        logger.info("orders: {}", orders);
+        orders = joinRepository.selectJoinByUser(120);
+        logger.info("orders: {}", orders);
     }
 }
