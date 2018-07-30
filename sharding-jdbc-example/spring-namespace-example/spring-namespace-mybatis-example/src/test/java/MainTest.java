@@ -36,7 +36,6 @@ public class MainTest {
 //            hashes[i] = hash;
         }*/
         double [] hashes = normalDistribution.sample(6000);
-        System.out.println("-----------------------");
         Map<Integer, Integer> hashCount = Maps.newTreeMap();
         for (double h : hashes) {
             if (h > 0) {
@@ -53,6 +52,23 @@ public class MainTest {
         for (Integer h : hashCount.keySet()) {
             int count = hashCount.get(h);
             System.out.println(String.format("%d, %d\t%s", h, count, repeat("-", count)));
+        }
+    }
+    @Test
+    public void testUniform() {
+        UniformIntegerDistribution distribution = new UniformIntegerDistribution(0, 9);
+        int [] hashes = distribution.sample(6000);
+        Map<Integer, Integer> hashCount = Maps.newTreeMap();
+        for (int hashKey : hashes) {
+            if (hashCount.containsKey(hashKey)) {
+                hashCount.put(hashKey, hashCount.get(hashKey) + 1);
+            } else {
+                hashCount.put(hashKey, 1);
+            }
+        }
+        for (Integer h : hashCount.keySet()) {
+            int count = hashCount.get(h);
+            System.out.println(String.format("%d, %d\t%s", h, count, repeat("-", count / 6)));
         }
     }
 
