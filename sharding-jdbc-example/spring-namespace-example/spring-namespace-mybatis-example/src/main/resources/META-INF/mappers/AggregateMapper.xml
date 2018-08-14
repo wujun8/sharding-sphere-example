@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.shardingsphere.example.spring.namespace.mybatis.fixtrue.repository.AggregateRepository">
+
+    <resultMap id="groupSum" type="io.shardingsphere.example.spring.namespace.mybatis.fixtrue.result.GroupSum">
+        <result column="user_id" property="userId"/>
+        <result column="total" property="total"/>
+    </resultMap>
+    
+    <select id="sumSelectByUser" resultType="java.lang.Long">
+        SELECT
+            SUM(o.order_id - o.user_id)
+        FROM
+            t_order o
+        WHERE
+            o.user_id = #{user_id,jdbcType=INTEGER}
+    </select>
+
+    <select id="sumSelectByUserGroup" resultMap="groupSum">
+        SELECT
+            o.user_id, SUM(o.user_id) as total
+        FROM
+            t_order_item o
+        GROUP BY o.user_id
+    </select>
+
+    <select id="countSelectByUser" resultType="java.lang.Long">
+        SELECT
+            COUNT(DISTINCT o.user_id)
+        FROM
+            t_order o
+    </select>
+
+    <!-- wrong -->
+    <select id="countSelectStatus" resultType="java.lang.Long">
+        SELECT
+            COUNT(DISTINCT o.status)
+        FROM
+            t_order o
+    </select>
+</mapper>
